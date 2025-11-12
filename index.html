@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Scanner</title>
+    <style>
+        /* CSS for simple styling */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+        }
+        #reader {
+            width: 300px; /* Adjust size as needed */
+            margin: 20px auto;
+            border: 2px solid #007bff; /* Blue border for visibility */
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #result {
+            margin-top: 25px;
+            padding: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #0056b3;
+            background-color: #e9f0ff;
+            border-radius: 5px;
+        }
+        /* Ensure the video element inside the reader is responsive */
+        #reader video {
+            max-width: 100%;
+            height: auto;
+        }
+        /* Style for the button that appears after stopping */
+        .html5-qrcode-button {
+            background-color: #28a745 !important;
+            color: white !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: 5px !important;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+    <h2>Web Browser QR Code Scanner</h2>
+    
+    <div id="reader"></div> 
+    
+    <div id="result">Waiting for camera permission...</div>
+
+    <script>
+        // 4. Initialize the Html5QrcodeScanner
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle success, display the result as a clickable link
+            document.getElementById('result').innerHTML = `
+                ✅ **Scanned Success!** Link: <a href="${decodedText}" target="_blank">${decodedText}</a>
+            `;
+            // html5QrcodeScanner.pause(); // You can pause or stop here
+            html5QrcodeScanner.stop(); // Stop the camera entirely after a successful scan
+        }
+
+        function onScanFailure(error) {
+            // Function runs continuously while scanning. We leave it mostly quiet.
+        }
+
+        // Create the scanner instance targeting the 'reader' div
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", 
+            { 
+                fps: 10, // Frames per second
+                qrbox: {width: 250, height: 250}, // Size of the scanning box
+                // Set the preferred camera here if multiple are available
+                rememberLastUsedCamera: true
+            },
+            /* verbose= */ false // Keep console output clean
+        );
+
+        // Start the scanner
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+    </script>
+
+</body>
+</html>
