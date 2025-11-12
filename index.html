@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Specific QR Code Scanner</title>
+    <title>Specific QR Code Scanner (Pausing)</title>
     <style>
         /* CSS for simple styling */
         body {
@@ -51,7 +51,7 @@
 </head>
 <body>
 
-    <h2>Scan Specific QR Codes Only</h2>
+    <h2>Scan Specific QR Codes Only (Pauses)</h2>
     
     <div id="reader"></div> 
     <div id="result">Scan a valid QR Code...</div>
@@ -64,8 +64,8 @@
         const allowedQRCodes = [
             "https://zoma-sys.github.io/Display3/",
             "https://zoma-sys.github.io/Farida-3ahhhhhh/",
-            "https://scan.page/qG5t5X", // Added the first scan.page link
-            "https://scan.page/6EpYmx"  // Added the second scan.page link
+            "https://scan.page/qG5t5X",
+            "https://scan.page/6EpYmx"
             // Only these four links are accepted by the scanner
         ];
         // ************************************************************
@@ -79,16 +79,12 @@
                 // SUCCESS: The QR code is allowed!
                 resultElement.className = 'success';
                 resultElement.innerHTML = `
-                    ✅ **Valid Code Found!** Navigating to: <a href="${decodedText}" target="_blank">${decodedText}</a>
+                    ✅ **Valid Code Found!** Link: <a href="${decodedText}" target="_blank">${decodedText}</a>
                 `;
                 
-                // --- CONTINUOUS SCAN LOGIC (NO PAUSE) ---
-                // We keep the camera running and use a timeout to clear the success message.
-                setTimeout(() => {
-                    resultElement.className = '';
-                    resultElement.innerHTML = `Scan a valid QR Code...`;
-                }, 3000); 
-                // --- END CONTINUOUS SCAN LOGIC ---
+                // *** THIS IS THE CRUCIAL LINE for the "OLD STYLE" (Pausing) ***
+                html5QrcodeScanner.pause(); // Scanner stops and saves battery.
+                // **************************************************************
                 
             } else {
                 // FAILURE: The QR code is NOT allowed!
