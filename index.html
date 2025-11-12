@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Universal QR Code Scanner</title>
+    <title>Specific QR Code Scanner</title>
     <style>
         /* CSS for simple styling */
         body {
@@ -26,9 +26,15 @@
             padding: 10px;
             font-size: 1.1em;
             font-weight: bold;
-            color: #0056b3;
-            background-color: #e9f0ff;
             border-radius: 5px;
+        }
+        .error {
+            color: #cc0000;
+            background-color: #ffcccc;
+        }
+        .success {
+            color: #008000;
+            background-color: #ccffcc;
         }
         /* Style for the button that appears after stopping */
         .html5-qrcode-button {
@@ -45,43 +51,69 @@
 </head>
 <body>
 
-    <h2>Universal QR Code Scanner</h2>
+    <h2>Scan Specific QR Codes Only</h2>
     
     <div id="reader"></div> 
-    <div id="result">Waiting for camera permission...</div>
+    <div id="result">Scan a valid QR Code...</div>
 
     <script>
         
-        // This function runs every time a QR code is successfully decoded
+        // ************************************************************
+        // 1. DEFINE YOUR ALLOWED QR CODE TEXTS/LINKS HERE
+        // ************************************************************
+        const allowedQRCodes = [
+            "https://zoma-sys.github.io/Display3/",
+            "https://zoma-sys.github.io/Farida-3ahhhhhh/",
+            "https://scan.page/6EpYmx" // <-- NEW LINK ADDED HERE
+        ];
+        // ************************************************************
+        
+
         function onScanSuccess(decodedText, decodedResult) {
+            const resultElement = document.getElementById('result');
             
-            // Display the scanned text as a clickable link
-            document.getElementById('result').innerHTML = `
-                ✅ **Scanned Success!** Link: <a href="${decodedText}" target="_blank">${decodedText}</a>
-            `;
-            
-            // Stop the camera entirely after a successful scan
-            html5QrcodeScanner.stop(); 
+            // 2. Check if the scanned text is in the list of allowed codes
+            if (allowedQRCodes.includes(decodedText)) {
+                // SUCCESS: The QR code is allowed!
+                resultElement.className = 'success';
+                resultElement.innerHTML = `
+                    ✅ **Valid Code Found!** Navigating to: <a href="${decodedText}" target="_blank">${decodedText}</a>
+                `;
+                html5QrcodeScanner.pause(); // Pause scanning
+                
+            } else {
+                // FAILURE: The QR code is NOT allowed!
+                resultElement.className = 'error';
+                resultElement.innerHTML = `
+                    ❌ **Access Denied!** This QR code is not valid for this scanner.
+                    <br>Scanned: ${decodedText}
+                `;
+                // Wait briefly, then reset the message to encourage another scan
+                setTimeout(() => {
+                    resultElement.className = '';
+                    resultElement.innerHTML = `Scan a valid QR Code...`;
+                }, 3000); 
+                
+                // IMPORTANT: Do NOT stop the scanner, let it keep looking for a valid code
+            }
         }
 
         function onScanFailure(error) {
-            // Function runs continuously while scanning. We leave it quiet.
+            // Function remains quiet, allowing continuous scanning
         }
 
-        // Create the scanner instance targeting the 'reader' div
+        // Setup for the Html5QrcodeScanner remains the same
         let html5QrcodeScanner = new Html5QrcodeScanner(
             "reader", 
             { 
-                fps: 10, // Frames per second
-                qrbox: {width: 250, height: 250}, // Size of the scanning box
+                fps: 10,
+                qrbox: {width: 250, height: 250},
                 rememberLastUsedCamera: true
             },
             /* verbose= */ false
         );
 
-        // Start the scanner
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-
     </script>
 
 </body>
