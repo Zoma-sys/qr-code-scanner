@@ -64,8 +64,9 @@
         const allowedQRCodes = [
             "https://zoma-sys.github.io/Display3/",
             "https://zoma-sys.github.io/Farida-3ahhhhhh/",
-            "https://scan.page/6EpYmx",
-            "https://scan.page/qG5t5X" // Added the new link
+            "https://scan.page/qG5t5X", // Added the first scan.page link
+            "https://scan.page/6EpYmx"  // Added the second scan.page link
+            // Only these four links are accepted by the scanner
         ];
         // ************************************************************
         
@@ -81,13 +82,13 @@
                     ✅ **Valid Code Found!** Navigating to: <a href="${decodedText}" target="_blank">${decodedText}</a>
                 `;
                 
-                // IMPORTANT: We do NOT pause the scanner here, allowing continuous scanning.
-                
-                // Add a brief timeout to clear the message and indicate it's ready for next scan
+                // --- CONTINUOUS SCAN LOGIC (NO PAUSE) ---
+                // We keep the camera running and use a timeout to clear the success message.
                 setTimeout(() => {
                     resultElement.className = '';
                     resultElement.innerHTML = `Scan a valid QR Code...`;
                 }, 3000); 
+                // --- END CONTINUOUS SCAN LOGIC ---
                 
             } else {
                 // FAILURE: The QR code is NOT allowed!
@@ -96,4 +97,31 @@
                     ❌ **Access Denied!** This QR code is not valid for this scanner.
                     <br>Scanned: ${decodedText}
                 `;
-                // Wait briefly, then reset the message to encourage another
+                // Wait briefly, then reset the message to encourage another scan
+                setTimeout(() => {
+                    resultElement.className = '';
+                    resultElement.innerHTML = `Scan a valid QR Code...`;
+                }, 3000); 
+            }
+        }
+
+        function onScanFailure(error) {
+            // Function remains quiet, allowing continuous scanning
+        }
+
+        // Setup for the Html5QrcodeScanner remains the same
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", 
+            { 
+                fps: 10,
+                qrbox: {width: 250, height: 250},
+                rememberLastUsedCamera: true
+            },
+            /* verbose= */ false
+        );
+
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    </script>
+
+</body>
+</html>
